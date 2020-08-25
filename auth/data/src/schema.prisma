@@ -1,0 +1,25 @@
+// This is your Prisma schema file,
+// learn more about it in the docs https://pris.ly/d/prisma-schema
+
+datasource db {
+    provider = "postgresql"
+    url      = "postgresql://postgres:postgres@localhost:5432/omo-auth?schema=public"
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Challenges {
+  id Int @default(autoincrement()) @id
+  validTo DateTime
+  email String
+  challenge String
+  done Boolean
+}
+
+model Profile {
+  email String @id
+  schemaId String
+  document String
+}

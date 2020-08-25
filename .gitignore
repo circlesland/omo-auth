@@ -1,0 +1,8 @@
+# Project exclude paths
+/auth/data/node_modules/
+/auth/mailer/node_modules/
+/auth/server/node_modules/
+/auth/mailer/dist/
+/auth/server/dist/
+/auth/data/dist/
+/auth/server/.env

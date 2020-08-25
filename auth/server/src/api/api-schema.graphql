@@ -1,0 +1,35 @@
+scalar Json
+
+type Mutation {
+    # Sends a one time code to the e-mail recipient.
+    login(emailAddress:String!) : LoginResponse!
+
+    # Verifies the one time code and creates a new profile on the first call of verify for a new user.
+    verify(oneTimeToken:String!) : VerifyResponse!
+}
+
+type Query {
+    profile(jwt:String!): Profile!
+}
+
+type Profile {
+    email: String!
+    schemaId: String!
+    document: Json!
+}
+
+interface ActionResponse {
+    success: Boolean!
+    errorMessage: String
+}
+
+type LoginResponse implements ActionResponse {
+    success: Boolean!
+    errorMessage: String
+}
+
+type VerifyResponse implements ActionResponse {
+    success: Boolean!
+    errorMessage: String
+    jwt:String!
+}

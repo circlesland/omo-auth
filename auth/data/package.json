@@ -1,0 +1,23 @@
+{
+  "name": "@omo/auth-data",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "omo.earth",
+  "license": "AGPL-3.0-or-later",
+  "scripts": {
+    "generate": "npx prisma generate --schema ./src/schema.prisma",
+    "migrate_save": "npx prisma --experimental migrate save --schema ./src/schema.prisma",
+    "migrate_up": "npx prisma --experimental migrate up --schema ./src/schema.prisma",
+    "deploy": "npx prisma --experimental migrate save --schema ./src/schema.prisma && npx prisma --experimental migrate up --schema ./src/schema.prisma"
+  },
+  "devDependencies": {
+    "@prisma/cli": "^2.5.1",
+    "@types/node": "^14.0.1",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^2.5.1"
+  }
+}
