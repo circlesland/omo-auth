@@ -15,11 +15,6 @@ model Challenges {
   validTo DateTime
   email String
   challenge String
+  @@unique([email, challenge], name: "UX_Challenges_Email_Challenge")
   done Boolean
-}
-
-model Profile {
-  email String @id
-  schemaId String
-  document String
 }

@@ -1,5 +1,5 @@
 import {prisma} from "./prisma";
-import * as crypto from "crypto";
+import {ValueGenerator} from "@omo/auth-util/dist/valueGenerator";
 
 export interface RequestChallengeResponse
 {
@@ -11,7 +11,8 @@ export interface RequestChallengeResponse
 
 export interface VerifyChallengeResponse
 {
-    success: boolean
+    success: boolean,
+    email?:string
 }
 
 export class Challenge
@@ -27,13 +28,18 @@ export class Challenge
                 validTo: {
                     gt: now
                 }
+            },
+            select: {
+                done:true,
+                validTo:true
             }
         });
 
         if (pendingChallenges.length > 0) {
             return {
                 success: false,
-                errorMessage: "There is a pending challenge for this email address. Please solve it first or let it time-out before requesting a new one."
+                errorMessage: "There is a pending challenge for this email address. " +
+                    "Please solve it first or let it time-out before requesting a new one."
             }
         }
 
@@ -41,8 +47,12 @@ export class Challenge
             data: {
                 email: forEmail,
                 validTo: new Date(new Date().getTime() + (validForNSeconds * 1000)),
-                challenge: Challenge.generateChallenge(length),
+                challenge: ValueGenerator.generateRandomBase32String(length),
                 done: false
+            },
+            select: {
+                challenge: true,
+                validTo: true
             }
         });
 
@@ -72,9 +82,11 @@ export class Challenge
             }
         }
 
+        const foundChallenge = challenge[0];
+
         await prisma.challenges.update({
             where: {
-                id: challenge[0].id
+                id: foundChallenge.id
             },
             data: {
                 done: true
@@ -82,18 +94,8 @@ export class Challenge
         });
 
         return {
-            success: true
+            success: true,
+            email: foundChallenge.email
         }
-    }
-
-    private static generateChallenge(length:number)
-    {
-        const randomIntegers = new Int8Array(length);
-        crypto.randomFillSync(randomIntegers, 0, length);
-        let challenge = "";
-        for (let i of randomIntegers) {
-            challenge += i.toString(32);
-        }
-        return challenge;
     }
 }

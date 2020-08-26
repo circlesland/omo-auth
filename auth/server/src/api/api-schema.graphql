@@ -4,23 +4,23 @@ type Mutation {
     # Sends a one time code to the e-mail recipient.
     login(emailAddress:String!) : LoginResponse!
 
-    # Verifies the one time code and creates a new profile on the first call of verify for a new user.
+    # Verifies the one time code and issues a JWT that proofs that the owner has access to the email address
     verify(oneTimeToken:String!) : VerifyResponse!
 }
 
 type Query {
-    profile(jwt:String!): Profile!
-}
-
-type Profile {
-    email: String!
-    schemaId: String!
-    document: Json!
+    version : Version
 }
 
 interface ActionResponse {
     success: Boolean!
     errorMessage: String
+}
+
+type Version {
+    major: Int!
+    minor: Int!
+    revision: Int!
 }
 
 type LoginResponse implements ActionResponse {

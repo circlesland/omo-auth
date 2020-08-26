@@ -31,24 +31,19 @@ export type MutationVerifyArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  profile: Profile;
-};
-
-
-export type QueryProfileArgs = {
-  jwt: Scalars['String'];
-};
-
-export type Profile = {
-  __typename?: 'Profile';
-  email: Scalars['String'];
-  schemaId: Scalars['String'];
-  document: Scalars['Json'];
+  version?: Maybe<Version>;
 };
 
 export type ActionResponse = {
   success: Scalars['Boolean'];
   errorMessage?: Maybe<Scalars['String']>;
+};
+
+export type Version = {
+  __typename?: 'Version';
+  major: Scalars['Int'];
+  minor: Scalars['Int'];
+  revision: Scalars['Int'];
 };
 
 export type LoginResponse = ActionResponse & {
@@ -147,9 +142,10 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Query: ResolverTypeWrapper<{}>;
-  Profile: ResolverTypeWrapper<Profile>;
   ActionResponse: ResolversTypes['LoginResponse'] | ResolversTypes['VerifyResponse'];
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Version: ResolverTypeWrapper<Version>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   LoginResponse: ResolverTypeWrapper<LoginResponse>;
   VerifyResponse: ResolverTypeWrapper<VerifyResponse>;
 }>;
@@ -160,9 +156,10 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   String: Scalars['String'];
   Query: {};
-  Profile: Profile;
   ActionResponse: ResolversParentTypes['LoginResponse'] | ResolversParentTypes['VerifyResponse'];
   Boolean: Scalars['Boolean'];
+  Version: Version;
+  Int: Scalars['Int'];
   LoginResponse: LoginResponse;
   VerifyResponse: VerifyResponse;
 }>;
@@ -177,20 +174,20 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<QueryProfileArgs, 'jwt'>>;
-}>;
-
-export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
-  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  schemaId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  document?: Resolver<ResolversTypes['Json'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  version?: Resolver<Maybe<ResolversTypes['Version']>, ParentType, ContextType>;
 }>;
 
 export type ActionResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ActionResponse'] = ResolversParentTypes['ActionResponse']> = ResolversObject<{
   __resolveType: TypeResolveFn<'LoginResponse' | 'VerifyResponse', ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type VersionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Version'] = ResolversParentTypes['Version']> = ResolversObject<{
+  major?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  minor?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  revision?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
 export type LoginResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResponse'] = ResolversParentTypes['LoginResponse']> = ResolversObject<{
@@ -210,8 +207,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Json?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
-  Profile?: ProfileResolvers<ContextType>;
   ActionResponse?: ActionResponseResolvers<ContextType>;
+  Version?: VersionResolvers<ContextType>;
   LoginResponse?: LoginResponseResolvers<ContextType>;
   VerifyResponse?: VerifyResponseResolvers<ContextType>;
 }>;

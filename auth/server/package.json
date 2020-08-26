@@ -7,7 +7,7 @@
   "license": "LGPL-3.0-or-later",
   "scripts": {
     "generate": "graphql-codegen --config codegen.yml",
-    "run": "node dist/main.js"
+    "run": "node -r dotenv/config dist/main.js"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.17.8",
@@ -19,12 +19,14 @@
     "typescript": "^3.9.2"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "apollo-server": "^2.13.1",
     "bcrypt": "^4.0.1",
     "graphql": "^15.0.0",
     "graphql-import": "^1.0.2",
     "jsonwebtoken": "^8.5.1",
     "@omo/auth-mailer": "../mailer",
-    "@omo/auth-data": "../data"
+    "@omo/auth-data": "../data",
+    "@omo/auth-util": "../util"
   }
 }

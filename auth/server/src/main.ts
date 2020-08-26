@@ -1,8 +1,8 @@
 import {ApolloServer} from "apollo-server";
 import {Resolvers} from "./api/resolvers";
-import {config} from "./config";
 
-const {importSchema} = require('graphql-import')
+// TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
+import {importSchema} from "graphql-import";
 
 export class Main
 {
@@ -11,7 +11,12 @@ export class Main
 
     constructor()
     {
-        const apiSchemaTypeDefs = importSchema(config.graphql.schemaPath);
+        if (!process.env.AUTH_SERVICE_GRAPHQL_SCHEMA)
+        {
+            throw new Error("The AUTH_SERVICE_GRAPHQL_SCHEMA environment variable must contain a valid path that " +
+                "points to the GraphQL api schema.");
+        }
+        const apiSchemaTypeDefs = importSchema(process.env.AUTH_SERVICE_GRAPHQL_SCHEMA);
 
         this._resolvers = new Resolvers();
 
@@ -26,7 +31,14 @@ export class Main
 
     async run()
     {
-        await this._server.listen(config.server.port);
+        if (!process.env.AUTH_SERVICE_PORT)
+        {
+            throw new Error("The AUTH_SERVICE_PORT environment variable is not set.");
+        }
+
+        await this._server.listen({
+            port: parseInt(process.env.AUTH_SERVICE_PORT)
+        });
     }
 }
 

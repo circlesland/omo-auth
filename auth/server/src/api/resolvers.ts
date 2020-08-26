@@ -1,11 +1,13 @@
 import {
     LoginResponse,
-    MutationResolvers, Profile,
-    QueryResolvers, VerifyResponse
+    MutationResolvers,
+    QueryResolvers, VerifyResponse, Version
 } from "../generated/graphql";
 import {Challenge} from "@omo/auth-data/dist/challenge";
 import {Mailer} from "@omo/auth-mailer/dist/mailer";
 import {login} from "@omo/auth-mailer/dist/templates/login";
+import jsonwebtoken from 'jsonwebtoken';
+import {ValueGenerator} from "@omo/auth-util/dist/valueGenerator";
 
 export class Resolvers
 {
@@ -38,6 +40,8 @@ export class Resolvers
                 }
                 catch (e)
                 {
+                    console.error(e);
+
                     return <LoginResponse>{
                         success: false,
                         errorMessage: "Internal server error"
@@ -49,15 +53,15 @@ export class Resolvers
                 try
                 {
                     const verificationResult = await Challenge.verifyChallenge(oneTimeToken);
-                    if (!verificationResult.success)
+                    if (!verificationResult.success || !verificationResult.email)
                     {
                         return <VerifyResponse>{
                             success: false,
-                            errorMessage: "Your code is invalid or the challenge has already expired. Please try again."
+                            errorMessage: "Your code is invalid or has already expired."
                         }
                     }
 
-                    const jwt = "YOUR-JWT-GOES-HERE";
+                    const jwt = Resolvers._generateJwt(verificationResult.email);
 
                     return <VerifyResponse>{
                         success: true,
@@ -66,6 +70,8 @@ export class Resolvers
                 }
                 catch (e)
                 {
+                    console.error(e);
+
                     return <VerifyResponse>{
                         success: false,
                         errorMessage: "Internal server error"
@@ -75,22 +81,55 @@ export class Resolvers
         };
 
         this.queryResolvers = {
-            profile: async (parent, {jwt}, context) =>
+            version: async (parent, {}, context) =>
             {
-                try
-                {
-                    return <Profile>{
-                        id: "YOUR-ID",
-                        email: "YOUR-EMAIL",
-                        schemaId: "SCHEMA-ID",
-                        document: "PROFILE-DATA"
-                    }
-                }
-                catch (e)
-                {
-                    throw new Error("Internal server error")
+                return <Version>{
+                    major: 1,
+                    minor: 0,
+                    revision: 0
                 }
             }
         }
+    }
+
+    private static _generateJwt(forEmail:string)
+    {
+        if (!process.env.AUTH_SERVICE_JWT_EXP_IN_SEC)
+        {
+            throw new Error("The AUTH_SERVICE_JWT_EXP_IN_SEC environment variable must contain a numeric " +
+                "value that specifies the token expiration duration in minutes.")
+        }
+        if (!process.env.AUTH_SERVICE_JWT_ISSUER)
+        {
+            throw new Error("The AUTH_SERVICE_JWT_ISSUER environment variable must contain a value.")
+        }
+
+        // RFC 7519: 4.1.1.  "iss" (Issuer) Claim
+        const iss = process.env.AUTH_SERVICE_JWT_ISSUER;
+
+        // RFC 7519: 4.1.2.  "sub" (Subject) Claim
+        const sub = forEmail;
+
+        // RFC 7519: 4.1.3.  "aud" (Audience) Claim
+        const aud = [""];
+
+        // RFC 7519: 4.1.4.  "exp" (Expiration Time) Claim
+        const expiresInMinutes = parseInt(process.env.AUTH_SERVICE_JWT_EXP_IN_SEC);
+        const exp = Math.floor(Date.now() / 1000) + (expiresInMinutes * 60)
+
+        // RFC 7519: 4.1.5.  "nbf" (Not Before) Claim
+        // const nbf =
+
+        // RFC 7519: 4.1.6.  "iat" (Issued At) Claim
+        const iat = Date.now() / 1000
+
+        // RFC 7519: 4.1.7.  "jti" (JWT ID) Claim
+        const jti = ValueGenerator.generateRandomBase32String(8);
+
+        const tokenData = {
+            iss, sub, aud, exp, iat, jti
+        };
+
+        return jsonwebtoken.sign(tokenData, "4");
     }
 }
