@@ -3,11 +3,13 @@ import {Resolvers} from "./api/resolvers";
 
 // TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
 import {importSchema} from "graphql-import";
+import {KeyRotator} from "./keyRotator";
 
 export class Main
 {
     private readonly _server: ApolloServer;
     private readonly _resolvers: Resolvers;
+    private readonly _keyRotator: KeyRotator;
 
     constructor()
     {
@@ -19,6 +21,7 @@ export class Main
         const apiSchemaTypeDefs = importSchema(process.env.AUTH_SERVICE_GRAPHQL_SCHEMA);
 
         this._resolvers = new Resolvers();
+        this._keyRotator = new KeyRotator();
 
         this._server = new ApolloServer({
             typeDefs: apiSchemaTypeDefs,
@@ -35,10 +38,16 @@ export class Main
         {
             throw new Error("The AUTH_SERVICE_PORT environment variable is not set.");
         }
+        if (!process.env.AUTH_SERVICE_ROTATE_EVERY_N_SECONDS)
+        {
+            throw new Error("The AUTH_SERVICE_ROTATE_EVERY_N_SECONDS environment variable is not set.");
+        }
 
         await this._server.listen({
             port: parseInt(process.env.AUTH_SERVICE_PORT)
         });
+
+        await this._keyRotator.start(parseInt(process.env.AUTH_SERVICE_ROTATE_EVERY_N_SECONDS));
     }
 }
 

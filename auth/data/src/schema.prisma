@@ -18,3 +18,11 @@ model Challenges {
   @@unique([email, challenge], name: "UX_Challenges_Email_Challenge")
   done Boolean
 }
+
+model KeyPairs {
+  id Int @default(autoincrement()) @id
+  validFrom DateTime
+  validTo DateTime?
+  privateKey String
+  publicKey String
+}

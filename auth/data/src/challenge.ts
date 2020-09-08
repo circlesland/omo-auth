@@ -47,7 +47,7 @@ export class Challenge
             data: {
                 email: forEmail,
                 validTo: new Date(new Date().getTime() + (validForNSeconds * 1000)),
-                challenge: ValueGenerator.generateRandomBase32String(length),
+                challenge: ValueGenerator.generateRandomUrlSafeString(length),
                 done: false
             },
             select: {

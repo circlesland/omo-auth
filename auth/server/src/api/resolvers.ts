@@ -8,9 +8,12 @@ import {Mailer} from "@omo/auth-mailer/dist/mailer";
 import {login} from "@omo/auth-mailer/dist/templates/login";
 import jsonwebtoken from 'jsonwebtoken';
 import {ValueGenerator} from "@omo/auth-util/dist/valueGenerator";
+import {KeyPair} from "@omo/auth-data/dist/keyPair";
 
 export class Resolvers
 {
+    // TODO: Add rate limiting (e.g. with https://www.npmjs.com/package/graphql-rate-limit-directive)
+
     readonly queryResolvers: QueryResolvers;
     readonly mutationResolvers: MutationResolvers;
 
@@ -61,7 +64,7 @@ export class Resolvers
                         }
                     }
 
-                    const jwt = Resolvers._generateJwt(verificationResult.email);
+                    const jwt = await Resolvers._generateJwt(verificationResult.email);
 
                     return <VerifyResponse>{
                         success: true,
@@ -92,7 +95,7 @@ export class Resolvers
         }
     }
 
-    private static _generateJwt(forEmail:string)
+    private static async _generateJwt(forEmail:string)
     {
         if (!process.env.AUTH_SERVICE_JWT_EXP_IN_SEC)
         {
@@ -118,18 +121,25 @@ export class Resolvers
         const exp = Math.floor(Date.now() / 1000) + (expiresInMinutes * 60)
 
         // RFC 7519: 4.1.5.  "nbf" (Not Before) Claim
+        // TODO: Sync with key rotation
         // const nbf =
 
         // RFC 7519: 4.1.6.  "iat" (Issued At) Claim
         const iat = Date.now() / 1000
 
         // RFC 7519: 4.1.7.  "jti" (JWT ID) Claim
-        const jti = ValueGenerator.generateRandomBase32String(8);
+        const jti = ValueGenerator.generateRandomUrlSafeString(24);
 
         const tokenData = {
             iss, sub, aud, exp, iat, jti
         };
 
-        return jsonwebtoken.sign(tokenData, "4");
+        const keypair = await KeyPair.findValidKey();
+        if (!keypair)
+            throw new Error("No valid key available to sign the jwt.")
+
+        return jsonwebtoken.sign(tokenData, keypair.privateKey, {
+            algorithm: "RS256"
+        });
     }
 }
