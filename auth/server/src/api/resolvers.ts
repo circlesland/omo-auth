@@ -84,6 +84,21 @@ export class Resolvers
         };
 
         this.queryResolvers = {
+            keys: async (parent, {kid}, context) => {
+                if (!kid)
+                    throw new Error("No key id (kid) was supplied.")
+
+                const keyId = parseInt(kid);
+                const pk = await KeyPair.findPublicKeyById(keyId);
+                if (!pk)
+                    throw new Error("Couldn't find a key with the specified id.");
+
+                return {
+                    id: pk.id,
+                    publicKey: pk.publicKeyPem,
+                    validTo: pk.validTo.toJSON()
+                };
+            },
             version: async (parent, {}, context) =>
             {
                 return <Version>{
@@ -130,15 +145,17 @@ export class Resolvers
         // RFC 7519: 4.1.7.  "jti" (JWT ID) Claim
         const jti = ValueGenerator.generateRandomUrlSafeString(24);
 
-        const tokenData = {
-            iss, sub, aud, exp, iat, jti
-        };
-
         const keypair = await KeyPair.findValidKey();
         if (!keypair)
             throw new Error("No valid key available to sign the jwt.")
 
-        return jsonwebtoken.sign(tokenData, keypair.privateKey, {
+        const kid = process.env.AUTH_SERVICE_BASE_URL + "/graphql?query=query%20%7B%20keys%28kid%3A%22" + keypair.id + "%22%29%20%7Bid%2C%20validTo%2C%20publicKey%20%7D%7D";
+
+        const tokenData = {
+            iss, sub, aud, exp, iat, jti, kid
+        };
+
+        return jsonwebtoken.sign(tokenData, keypair.privateKeyPem, {
             algorithm: "RS256"
         });
     }

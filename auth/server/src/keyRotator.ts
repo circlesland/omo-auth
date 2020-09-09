@@ -25,6 +25,7 @@ export class KeyRotator
 
     stop()
     {
+        // TODO: Find a way to correctly stop the nodejs timer
         if (!this._intervalHandle)
         {
             throw new Error("The KeyRotator wasn't running.")

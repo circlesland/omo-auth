@@ -22,7 +22,9 @@ model Challenges {
 model KeyPairs {
   id Int @default(autoincrement()) @id
   validFrom DateTime
-  validTo DateTime?
-  privateKey String
-  publicKey String
+  validTo DateTime
+  privateKeyPem String
+  publicKeyPem String
+  privateKeyJwk String
+  publicKeyJwk String
 }

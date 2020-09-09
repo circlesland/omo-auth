@@ -31,12 +31,25 @@ export type MutationVerifyArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  keys?: Maybe<PublicKey>;
   version?: Maybe<Version>;
+};
+
+
+export type QueryKeysArgs = {
+  kid: Scalars['String'];
 };
 
 export type ActionResponse = {
   success: Scalars['Boolean'];
   errorMessage?: Maybe<Scalars['String']>;
+};
+
+export type PublicKey = {
+  __typename?: 'PublicKey';
+  id: Scalars['Int'];
+  publicKey: Scalars['String'];
+  validTo: Scalars['String'];
 };
 
 export type Version = {
@@ -144,8 +157,9 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   ActionResponse: ResolversTypes['LoginResponse'] | ResolversTypes['VerifyResponse'];
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  Version: ResolverTypeWrapper<Version>;
+  PublicKey: ResolverTypeWrapper<PublicKey>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Version: ResolverTypeWrapper<Version>;
   LoginResponse: ResolverTypeWrapper<LoginResponse>;
   VerifyResponse: ResolverTypeWrapper<VerifyResponse>;
 }>;
@@ -158,8 +172,9 @@ export type ResolversParentTypes = ResolversObject<{
   Query: {};
   ActionResponse: ResolversParentTypes['LoginResponse'] | ResolversParentTypes['VerifyResponse'];
   Boolean: Scalars['Boolean'];
-  Version: Version;
+  PublicKey: PublicKey;
   Int: Scalars['Int'];
+  Version: Version;
   LoginResponse: LoginResponse;
   VerifyResponse: VerifyResponse;
 }>;
@@ -174,6 +189,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  keys?: Resolver<Maybe<ResolversTypes['PublicKey']>, ParentType, ContextType, RequireFields<QueryKeysArgs, 'kid'>>;
   version?: Resolver<Maybe<ResolversTypes['Version']>, ParentType, ContextType>;
 }>;
 
@@ -181,6 +197,13 @@ export type ActionResponseResolvers<ContextType = any, ParentType extends Resolv
   __resolveType: TypeResolveFn<'LoginResponse' | 'VerifyResponse', ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type PublicKeyResolvers<ContextType = any, ParentType extends ResolversParentTypes['PublicKey'] = ResolversParentTypes['PublicKey']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  publicKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  validTo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
 export type VersionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Version'] = ResolversParentTypes['Version']> = ResolversObject<{
@@ -208,6 +231,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   ActionResponse?: ActionResponseResolvers<ContextType>;
+  PublicKey?: PublicKeyResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
   LoginResponse?: LoginResponseResolvers<ContextType>;
   VerifyResponse?: VerifyResponseResolvers<ContextType>;

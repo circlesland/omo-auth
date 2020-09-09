@@ -2,8 +2,10 @@ import {generateKeyPair} from "crypto";
 
 export interface KeyPair
 {
-    privateKey: string,
-    publicKey: string
+    privateKeyPem: string,
+    privateKeyJwk: string,
+    publicKeyPem: string
+    publicKeyJwk: string
 }
 
 export class KeyGenerator
@@ -25,17 +27,27 @@ export class KeyGenerator
                         //passphrase: 'top secret' // *optional*
                     }
                 },
-                (err, publicKey, privateKey) =>
+                (err, publicKeyPem, privateKeyPem) =>
                 {
                     if (err)
                     {
                         reject(err);
                         return;
                     }
-                    resolve({
-                        privateKey,
-                        publicKey
-                    });
+
+                    const privateKeyJwk = "none";// pem2jwk(privateKeyPem);
+                    const publicKeyJwk = "none";// pem2jwk(publicKeyPem);
+
+                    const multiFormatKeyPair = {
+                        privateKeyPem,
+                        privateKeyJwk: JSON.stringify(privateKeyJwk),
+                        publicKeyPem,
+                        publicKeyJwk: JSON.stringify(publicKeyJwk)
+                    };
+
+                    console.log(multiFormatKeyPair);
+
+                    resolve(multiFormatKeyPair);
                 });
         });
     }

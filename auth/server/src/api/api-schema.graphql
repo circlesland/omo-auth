@@ -9,12 +9,19 @@ type Mutation {
 }
 
 type Query {
+    keys(kid:String!) : PublicKey
     version : Version
 }
 
 interface ActionResponse {
     success: Boolean!
     errorMessage: String
+}
+
+type PublicKey {
+    id: Int!
+    publicKey: String!
+    validTo: String!
 }
 
 type Version {
