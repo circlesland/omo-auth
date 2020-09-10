@@ -1,9 +1,24 @@
 version: '3'
 services:
+
+  nginx:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+    args:
+      - DOMAIN=${DOMAIN}
+      - IPV4ADDRESS=${IPV4ADDRESS}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    restart: always
+
   postgres:
     build:
       context: ./data
       dockerfile: Dockerfile
+    args:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     restart: always
     volumes:
       - postgres:/var/lib/postgresql/data
@@ -12,8 +27,19 @@ services:
     depends_on:
       - postgres
     build:
-      context: .
-      dockerfile: server/Dockerfile
+      context: ./server
+      dockerfile: Dockerfile
+    args:
+      - SMTP_SERVER = ${SMTP_SERVER}
+      - SMPT_PORT = ${SMPT_PORT}
+      - SMTP_SECURE = ${SMTP_SECURE}
+      - SMTP_USER = ${SMTP_USER}
+      - SMTP_PASS = ${SMTP_PASS}
+      - AUTH_SERVICE_BASE_URL = "https://${DOMAIN}/auth"
+      - AUTH_SERVICE_JWT_ISSUER = "https://${DOMAIN}/auth"
+      - AUTH_SERVICE_JWT_EXP_IN_SEC = 60 # issued tokens are valid for 60 seconds
+      - AUTH_SERVICE_ROTATE_EVERY_N_SECONDS = 3600 # rotate the keys every hour
+      - AUTH_SERVICE_GRAPHQL_SCHEMA = "src/api/api-schema.graphql"
     restart: always
     ports:
       - "5000:5000"
