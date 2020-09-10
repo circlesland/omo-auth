@@ -7,3 +7,4 @@
 /auth/data/dist/
 /auth/util/dist/
 /auth/server/.env
+/auth/.env
