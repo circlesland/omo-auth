@@ -5,7 +5,7 @@ CREATE TABLE "public"."Challenges" (
 "challenge" text   NOT NULL ,
 "done" boolean   NOT NULL ,
 PRIMARY KEY ("id")
-)
+);
 
 CREATE TABLE "public"."KeyPairs" (
 "id" SERIAL,
@@ -16,6 +16,6 @@ CREATE TABLE "public"."KeyPairs" (
 "privateKeyJwk" text   NOT NULL ,
 "publicKeyJwk" text   NOT NULL ,
 PRIMARY KEY ("id")
-)
+);
 
-CREATE UNIQUE INDEX "UX_Challenges_Email_Challenge" ON "public"."Challenges"("email", "challenge")
+CREATE UNIQUE INDEX "UX_Challenges_Email_Challenge" ON "public"."Challenges"("email", "challenge");
