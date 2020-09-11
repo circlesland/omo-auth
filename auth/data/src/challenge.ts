@@ -12,7 +12,8 @@ export interface RequestChallengeResponse
 export interface VerifyChallengeResponse
 {
     success: boolean,
-    email?:string
+    email?:string,
+    appId?:string
 }
 
 export class Challenge
@@ -96,7 +97,8 @@ export class Challenge
 
         return {
             success: true,
-            email: foundChallenge.email
+            email: foundChallenge.email,
+            appId: foundChallenge.appId
         }
     }
 }

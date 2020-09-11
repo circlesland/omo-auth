@@ -12,6 +12,7 @@ generator client {
 
 model Apps {
   id Int @default(autoincrement()) @id
+  appId String @unique
   originHeaderValue String
   validFrom DateTime
   validTo DateTime?

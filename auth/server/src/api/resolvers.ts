@@ -9,6 +9,7 @@ import {login} from "@omo/auth-mailer/dist/templates/login";
 import jsonwebtoken from 'jsonwebtoken';
 import {ValueGenerator} from "@omo/auth-util/dist/valueGenerator";
 import {KeyPair} from "@omo/auth-data/dist/keyPair";
+import {Apps} from "@omo/auth-data/dist/apps";
 
 export class Resolvers
 {
@@ -24,6 +25,13 @@ export class Resolvers
             {
                 try
                 {
+                    const app = await Apps.findById(appId);
+                    if (!app)
+                        throw new Error("The app with the id '" + appId + "' couldn't be found.")
+
+                    if (app.originHeaderValue !== origin)
+                        throw new Error("The origin of the request doesn't map with the configured origin for app '" + appId + "'");
+
                     const challenge = await Challenge.requestChallenge(emailAddress, appId, 8, 120);
                     if (!challenge.success)
                     {
@@ -56,15 +64,15 @@ export class Resolvers
                 try
                 {
                     const verificationResult = await Challenge.verifyChallenge(oneTimeToken);
-                    if (!verificationResult.success || !verificationResult.email)
+                    if (!verificationResult.success || !verificationResult.email || !verificationResult.appId)
                     {
                         return <VerifyResponse>{
                             success: false,
-                            errorMessage: "Your code is invalid or has already expired."
+                            errorMessage: "Your code is invalid or already expired."
                         }
                     }
 
-                    const jwt = await Resolvers._generateJwt(verificationResult.email, origin);
+                    const jwt = await Resolvers._generateJwt(verificationResult.email, verificationResult.appId);
 
                     return <VerifyResponse>{
                         success: true,
@@ -110,7 +118,7 @@ export class Resolvers
         }
     }
 
-    private static async _generateJwt(forEmail:string, forAudience:string)
+    private static async _generateJwt(forEmail:string, forAppId:string)
     {
         if (!process.env.AUTH_SERVICE_JWT_EXP_IN_SEC)
         {
@@ -129,7 +137,7 @@ export class Resolvers
         const sub = forEmail;
 
         // RFC 7519: 4.1.3.  "aud" (Audience) Claim
-        const aud = [forAudience];
+        const aud = [forAppId];
 
         // RFC 7519: 4.1.4.  "exp" (Expiration Time) Claim
         const expiresInMinutes = parseInt(process.env.AUTH_SERVICE_JWT_EXP_IN_SEC);
