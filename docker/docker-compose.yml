@@ -30,5 +30,7 @@ services:
     build: proxy
     env_file:
       - .env
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/
     ports:
       - "8080:80"
