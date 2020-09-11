@@ -16,7 +16,7 @@ echo "   ssl_session_tickets on;"                                               
 echo "   ssl_stapling on;"                                                                        >> nginx.conf
 echo "   ssl_stapling_verify on;"                                                                 >> nginx.conf
 
-echo "   add_header Strict-Transport-Security ""max-age=31536000; includeSubDomains"" always;"    >> nginx.conf
+echo '   add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;'      >> nginx.conf
 
 echo "   root /usr/share/nginx/html;"                                                             >> nginx.conf
 
