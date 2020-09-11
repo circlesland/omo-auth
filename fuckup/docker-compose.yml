@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+
+  postgres:
+    build: postgres
+    env_file:
+      - .env
+    ports:
+      - "5432"
+
+  omo-auth:
+    depends_on:
+      - postgres
+    build: omo-auth
+    env_file:
+      - .env
+    ports:
+      - "80"
+
+  static:
+    build: static
+    ports:
+      - "80"
+
+  proxy:
+    build: proxy
+    env_file:
+      - .env
+    ports:
+    - "8080:80"

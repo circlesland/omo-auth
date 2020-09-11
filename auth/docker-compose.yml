@@ -11,8 +11,6 @@ services:
     restart: always
 
   postgres:
-    depends_on:
-      - nginx
     build:
       context: ./data
       dockerfile: Dockerfile
