@@ -4,6 +4,7 @@ import {Resolvers} from "./api/resolvers";
 // TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
 import {importSchema} from "graphql-import";
 import {KeyRotator} from "./keyRotator";
+import {RequestContext} from "./requestContext";
 
 export class Main
 {
@@ -24,6 +25,7 @@ export class Main
         this._keyRotator = new KeyRotator();
 
         this._server = new ApolloServer({
+            context: RequestContext.create,
             typeDefs: apiSchemaTypeDefs,
             resolvers: {
                 Mutation: this._resolvers.mutationResolvers,

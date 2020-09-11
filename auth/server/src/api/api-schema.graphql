@@ -2,7 +2,7 @@ scalar Json
 
 type Mutation {
     # Sends a one time code to the e-mail recipient.
-    login(emailAddress:String!) : LoginResponse!
+    login(appId:String! emailAddress:String!) : LoginResponse!
 
     # Verifies the one time code and issues a JWT that proofs that the owner has access to the email address
     verify(oneTimeToken:String!) : VerifyResponse!

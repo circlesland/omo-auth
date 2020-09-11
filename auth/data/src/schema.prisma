@@ -10,10 +10,18 @@ generator client {
     provider = "prisma-client-js"
 }
 
+model Apps {
+  id Int @default(autoincrement()) @id
+  originHeaderValue String
+  validFrom DateTime
+  validTo DateTime?
+}
+
 model Challenges {
   id Int @default(autoincrement()) @id
   validTo DateTime
   email String
+  appId String
   challenge String
   @@unique([email, challenge], name: "UX_Challenges_Email_Challenge")
   done Boolean

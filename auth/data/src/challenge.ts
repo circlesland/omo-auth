@@ -17,7 +17,7 @@ export interface VerifyChallengeResponse
 
 export class Challenge
 {
-    public static async requestChallenge(forEmail:string, length:number, validForNSeconds:number) : Promise<RequestChallengeResponse>
+    public static async requestChallenge(forEmail:string, forAppId:string, length:number, validForNSeconds:number) : Promise<RequestChallengeResponse>
     {
         const now = new Date();
 
@@ -45,6 +45,7 @@ export class Challenge
 
         const newChallenge = await prisma.challenges.create({
             data: {
+                appId: forAppId,
                 email: forEmail,
                 validTo: new Date(new Date().getTime() + (validForNSeconds * 1000)),
                 challenge: ValueGenerator.generateRandomUrlSafeString(length),

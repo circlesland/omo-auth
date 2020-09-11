@@ -20,11 +20,11 @@ export class Resolvers
     constructor()
     {
         this.mutationResolvers = {
-            login: async (parent, {emailAddress}, context) =>
+            login: async (parent, {appId, emailAddress}, {origin}) =>
             {
                 try
                 {
-                    const challenge = await Challenge.requestChallenge(emailAddress, 8, 120);
+                    const challenge = await Challenge.requestChallenge(emailAddress, appId, 8, 120);
                     if (!challenge.success)
                     {
                         return <LoginResponse>{
@@ -51,7 +51,7 @@ export class Resolvers
                     }
                 }
             },
-            verify: async (parent, {oneTimeToken}, context) =>
+            verify: async (parent, {oneTimeToken}, {origin}) =>
             {
                 try
                 {
@@ -64,7 +64,7 @@ export class Resolvers
                         }
                     }
 
-                    const jwt = await Resolvers._generateJwt(verificationResult.email);
+                    const jwt = await Resolvers._generateJwt(verificationResult.email, origin);
 
                     return <VerifyResponse>{
                         success: true,
@@ -84,7 +84,7 @@ export class Resolvers
         };
 
         this.queryResolvers = {
-            keys: async (parent, {kid}, context) => {
+            keys: async (parent, {kid}, {origin}) => {
                 if (!kid)
                     throw new Error("No key id (kid) was supplied.")
 
@@ -99,7 +99,7 @@ export class Resolvers
                     validTo: pk.validTo.toJSON()
                 };
             },
-            version: async (parent, {}, context) =>
+            version: async (parent, {}, {origin}) =>
             {
                 return <Version>{
                     major: 1,
@@ -110,7 +110,7 @@ export class Resolvers
         }
     }
 
-    private static async _generateJwt(forEmail:string)
+    private static async _generateJwt(forEmail:string, forAudience:string)
     {
         if (!process.env.AUTH_SERVICE_JWT_EXP_IN_SEC)
         {
@@ -129,7 +129,7 @@ export class Resolvers
         const sub = forEmail;
 
         // RFC 7519: 4.1.3.  "aud" (Audience) Claim
-        const aud = [""];
+        const aud = [forAudience];
 
         // RFC 7519: 4.1.4.  "exp" (Expiration Time) Claim
         const expiresInMinutes = parseInt(process.env.AUTH_SERVICE_JWT_EXP_IN_SEC);

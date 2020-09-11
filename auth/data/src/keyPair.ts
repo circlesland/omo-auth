@@ -3,12 +3,13 @@ import {KeyGenerator} from "@omo/auth-util/dist/keyGenerator";
 
 export class KeyPair
 {
-    public static async findPublicKeyById(id:number) {
+    public static async findPublicKeyById(id: number)
+    {
         return await prisma.keyPairs.findOne({
             where: {
                 id: id
             },
-            select:{
+            select: {
                 id: true,
                 publicKeyPem: true,
                 validTo: true
@@ -21,11 +22,11 @@ export class KeyPair
         const now = new Date();
 
         const validKeyPairs = await prisma.keyPairs.findMany({
-            where: {
-                validFrom: {
-                    lte: now
-                },
-                validTo: {
+                where: {
+                    validFrom: {
+                        lte: now
+                    },
+                    validTo: {
                         gt: now
                     }
                 }

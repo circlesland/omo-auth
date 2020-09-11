@@ -9,7 +9,7 @@
             const payload = {
                 "operationName": null,
                 "variables": {},
-                "query": "mutation { login(emailAddress: \"" + emailAddress + "\") { success errorMessage }}"
+                "query": "mutation { login(appId: \"\", emailAddress: \"" + emailAddress + "\") { success errorMessage }}"
             };
 
             const xhr = new XMLHttpRequest();

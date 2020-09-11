@@ -21,6 +21,7 @@ export type Mutation = {
 
 
 export type MutationLoginArgs = {
+  appId: Scalars['String'];
   emailAddress: Scalars['String'];
 };
 
@@ -184,7 +185,7 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  login?: Resolver<ResolversTypes['LoginResponse'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'emailAddress'>>;
+  login?: Resolver<ResolversTypes['LoginResponse'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'appId' | 'emailAddress'>>;
   verify?: Resolver<ResolversTypes['VerifyResponse'], ParentType, ContextType, RequireFields<MutationVerifyArgs, 'oneTimeToken'>>;
 }>;
 
