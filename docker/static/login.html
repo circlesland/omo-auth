@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script>
+        function Login() {
+            const emailAddress = document.getElementById("email").value;
+
+            const payload = {
+                "operationName": null,
+                "variables": {},
+                "query": "mutation { login(emailAddress: \"" + emailAddress + "\") { success errorMessage }}"
+            };
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "https://auth.omo.earth");
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify(payload));
+            xhr.onreadystatechange = (e) => {
+                document.getElementById("request").style.visibility = "hidden";
+                document.getElementById("response").style.visibility = "visible";
+            }
+        }
+    </script>
+</head>
+<body>
+<div style="width: 100%; height:100%;">
+    <div id="request" style="width: 200px; height: 150px; margin: 0 auto">
+        <h1>OMO Login</h1>
+        <p>Please provide your E-Mail address below:</p>
+        <input id="email" type="text"><br/>
+        <input type="button" onclick="Login()" value="Send magic link">
+    </div>
+    <div id="response" style="width: 200px; height: 150px; margin: 0 auto; visibility: hidden;">
+        <h1>Thank you!</h1>
+        <p>Please take a look at your inbox. Your magic login link should arrive shortly.</p>
+    </div>
+</div>
+</body>
+</html>
