@@ -33,4 +33,5 @@ services:
     volumes:
       - /etc/letsencrypt/:/etc/letsencrypt/
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
