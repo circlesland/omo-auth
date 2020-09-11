@@ -38,6 +38,8 @@ ENV AUTH_SERVICE_GRAPHQL_SCHEMA=$AUTH_SERVICE_GRAPHQL_SCHEMA
 RUN git clone https://github.com/omoearth/omo-auth.git
 RUN cd omo-auth/auth && ./rebuild.sh
 
+RUN set POSTGRES_CONNECTION_URL=`postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}?schema=public`
+
 EXPOSE 5000/tcp
 
 CMD ["node", "omo-auth/auth/server/dist/main.js"]
