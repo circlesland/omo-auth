@@ -24,8 +24,11 @@ services:
       - "80"
 
   proxy:
+    depends_on:
+      - static
+      - omo-auth
     build: proxy
     env_file:
       - .env
     ports:
-    - "8080:80"
+      - "8080:80"
