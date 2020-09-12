@@ -31,9 +31,13 @@ JWT when the code was correctly validated.
     AUTH_SERVICE_PORT=80
     
     AUTH_SERVICE_JWT_EXP_IN_SEC=60   # The lifetime of the issued tokens in seconds
+    AUTH_SERVICE_JWT_ISSUER="https://auth.omo.earth"
     AUTH_SERVICE_ROTATE_EVERY_N_SECONDS=300   # Generate a new signing key-pair every N seconds
     AUTH_SERVICE_GRAPHQL_SCHEMA=omo-auth/auth/server/src/api/api-schema.graphql
     ```    
-### U
-When running with the above instructions, the reverse proxy will listen at _http://localhost:8080_. 
-All requests to the root are forwarded to the omo-auth service which in turn provides a GraphQL interface.
+3. Run the software:
+    ```bash
+   $ docker-compose up -d
+    ```
+### Usage
+

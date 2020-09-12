@@ -16,8 +16,8 @@ export class RequestContext
         }
 
         const originHeaderValue = arg.req.headers["origin"];
-        if (!originHeaderValue)
-            throw new Error("The incoming request doesn't have an Origin-header.")
+        //if (!originHeaderValue)
+        //    throw new Error("The incoming request doesn't have an Origin-header.")
 
         return new RequestContext(<string>originHeaderValue);
     }
